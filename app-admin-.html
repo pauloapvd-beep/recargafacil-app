@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0E1B3D"><title>Recarga Fácil · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2FB;--card:#fff;--ink:#0E1B3D;--mut:#5B6785;--pri:#2F4BFF;--on:#fff;--acc:#FFC21A;--ok:#0F9D58;--line:#DCE3F3}
+@media(prefers-color-scheme:dark){:root{--bg:#0A1226;--card:#121C3A;--ink:#EAF0FF;--mut:#93A0C4;--pri:#7B91FF;--on:#0A1226;--line:#22305A}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "DM Sans",system-ui,sans-serif}
+h1,h2,.big{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;margin:0;letter-spacing:-.02em}
+main{max-width:640px;margin:0 auto;padding:16px 16px 110px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:14px}
+.hero{background:linear-gradient(135deg,#0E1B3D,#2F4BFF);color:#fff;border:0;border-radius:26px;padding:20px}.hero h1{font-size:28px;margin:2px 0}
+label.t{font-weight:700;display:block;margin:16px 0 8px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:13px}
+.btn{width:100%;border:0;border-radius:16px;background:var(--pri);color:var(--on);font:700 17px "DM Sans",sans-serif;padding:16px;margin-top:16px;cursor:pointer}
+.btn.s{width:auto;padding:9px 14px;font-size:14px;margin:0;border-radius:12px}.btn.g{background:var(--ok);color:#fff}.btn.o{background:none;color:var(--pri);border:1.5px solid var(--line)}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}small{color:var(--mut)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-size:13px;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap}.p-ok{background:#DDF4E6;color:#0B6B3A}.p-w{background:#FFF1C7;color:#7A5600}.p-b{background:#FDDADC;color:#8A1C21}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.stat .big{font-size:22px;display:block}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom));display:flex;gap:6px;justify-content:center}nav button{flex:1;max-width:170px;border:0;background:none;color:var(--mut);font:700 14px "DM Sans",sans-serif;padding:12px 4px;border-radius:14px;cursor:pointer}nav button.on{background:var(--pri);color:var(--on)}
+.top{display:flex;justify-content:space-between;align-items:center}.link{background:none;border:0;color:var(--pri);font:700 14px "DM Sans",sans-serif;cursor:pointer;padding:8px 0}
+.modal{position:fixed;inset:0;background:rgba(5,10,30,.6);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9}.modal .card{max-width:420px;width:100%;text-align:center;max-height:90vh;overflow:auto}.modal img{width:100%;border-radius:12px}
+.empty{text-align:center;color:var(--mut);padding:22px 8px}
+</style></head>
+<body><main id="app"></main><div id="nav"></div><div id="modal"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+const SB_URL="https://endbndbfmbaibxzrtiyk.supabase.co",SB_KEY="sb_publishable_8v9gmj1yn6uxM1FvJjkBhw_9U-mNLGX";
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s),LV=["Novo","Bronze","Prata","Ouro"],VAL=[200,500,1000];
+let P=null,Ped=[],Cli=[],Stk=[],PAY={},tab="pedidos";
+const kz=n=>Math.round(n).toLocaleString("pt-PT")+" Kz",dt=t=>new Date(t).toLocaleString("pt-PT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),dd=t=>new Date(t).toLocaleDateString("pt-PT",{day:"2-digit",month:"2-digit"});
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lvl=u=>{const b=u.pagos_a_tempo>=12?3:u.pagos_a_tempo>=6?2:u.pagos_a_tempo>=3?1:0;return u.atrasos>=2?0:Math.max(0,b-u.atrasos)};
+const st=o=>o.estado==="pago"?["Pago","p-ok"]:Date.now()>new Date(o.vence_em)?["Atrasado","p-b"]:o.estado==="pendente"?["A ativar","p-w"]:["Até "+dd(o.vence_em),"p-w"];
+function toast(h){$("#modal").innerHTML='<div class="modal" onclick="this.parentNode.innerHTML=\'\'"><div class="card">'+h+'<button class="btn">Fechar</button></div></div>'}
+const go=t=>{tab=t;render()};
+async function load(){const{data:{user}}=await sb.auth.getUser();if(!user)return false;
+ P=(await sb.from("perfis").select("*").eq("id",user.id).maybeSingle()).data;if(!P||P.papel!=="admin")return false;
+ Ped=(await sb.from("pedidos").select("*,perfis(nome,telefone)").order("criado_em",{ascending:false})).data||[];
+ Cli=(await sb.from("perfis").select("*").order("criado_em",{ascending:false})).data||[];
+ Stk=(await sb.from("stock_pins").select("valor,usado")).data||[];
+ PAY=(await sb.from("config_pagamento").select("*").maybeSingle()).data||{};return true}
+async function boot(){const{data:{session}}=await sb.auth.getSession();if(!(session&&await load())){P=null;if(session)await sb.auth.signOut()}render()}
+async function entrar(){const ph=$("#ph").value.replace(/\D/g,""),pw=$("#pw").value;
+ const{error}=await sb.auth.signInWithPassword({email:ph+"@recargafacil.app",password:pw});if(error)return toast("<h3>Entrada recusada</h3><p>Telemóvel ou senha incorretos.</p>");
+ if(await load())render();else{await sb.auth.signOut();toast("<h3>Sem acesso</h3><p>Esta conta não é de administrador.</p>")}}
+async function sair(){await sb.auth.signOut();P=null;render()}
+async function act(fn,args,ok){const{error}=await sb.rpc(fn,args);if(error)return toast("<h3>Erro</h3><p>"+esc(error.message)+"</p>");await load();render();if(ok)toast("<h3>"+ok+"</h3>")}
+const confirmar=id=>act("confirmar_pagamento",{p_id:id},"Pagamento confirmado"),ativar=id=>act("ativar_pedido",{p_id:id},"Marcado como concluído");
+async function ver(id){const o=Ped.find(x=>x.id===id),{data,error}=await sb.storage.from("comprovativos").createSignedUrl(o.comprovativo_path,300);
+ if(error)return toast("<p>"+esc(error.message)+"</p>");toast("<h2>Comprovativo ("+esc(o.metodo_pagamento)+")</h2><p>"+esc(o.perfis.nome)+" · "+kz(o.total)+'</p><img src="'+data.signedUrl+'" alt="Comprovativo">')}
+async function addStock(){const v=+$("#sv").value,l=$("#sp").value.split("\n").map(x=>x.trim()).filter(Boolean);if(!l.length)return;
+ const{error}=await sb.from("stock_pins").insert(l.map(pin=>({valor:v,pin})));if(error)return toast("<p>"+esc(error.message)+"</p>");await load();render();toast("<h3>"+l.length+" PINs guardados</h3>")}
+async function savePay(){const{error}=await sb.from("config_pagamento").update({titular:$("#pt").value,iban:$("#pi").value,express:$("#pe").value}).eq("id",1);
+ if(error)return toast("<p>"+esc(error.message)+"</p>");await load();toast("<h3>Dados guardados</h3><p>Os clientes já veem os novos dados.</p>")}
+const decidir=(id,ok)=>act("decidir_cliente",{p_id:id,p_aprovar:ok},ok?"Cliente aprovado":"Cliente bloqueado"),limite=id=>{const v=parseInt(document.getElementById("lm"+id).value);if(isNaN(v))return;act("definir_limite",{p_id:id,p_limite:v},"Limite atualizado")};
+function vCli2(){const pend=Cli.filter(u=>u.estado==="pendente"&&u.papel==="cliente");
+ const row=u=>{const ab=Ped.filter(o=>o.cliente_id===u.id&&o.estado!=="pago").reduce((s,o)=>s+o.valor,0);
+  return'<div class="row" style="flex-wrap:wrap"><div><b>'+esc(u.nome)+"</b><br><small>"+esc(u.telefone)+" · "+LV[lvl(u)]+" · "+u.pagos_a_tempo+" a tempo, "+u.atrasos+" atrasos · em aberto "+kz(ab)+"</small></div>"+
+  (u.estado==="aprovado"?'<div class="acts"><input id="lm'+u.id+'" type="number" inputmode="numeric" value="'+u.limite+'" style="width:100px;padding:9px"><button class="btn s" onclick="limite(\''+u.id+'\')">Limite</button><button class="btn s o" onclick="decidir(\''+u.id+'\',false)">Bloquear</button></div>':'<div class="acts"><button class="btn s g" onclick="decidir(\''+u.id+'\',true)">Aprovar</button>'+(u.estado==="pendente"?'<button class="btn s o" onclick="decidir(\''+u.id+'\',false)">Recusar</button>':"")+"</div>")+"</div>"};
+ return(pend.length?'<div class="card"><h2>A aguardar aprovação ('+pend.length+")</h2>"+pend.map(row).join("")+"</div>":"")+'<div class="card"><h2>Clientes</h2>'+(Cli.filter(u=>u.papel==="cliente"&&u.estado!=="pendente").map(row).join("")||'<div class="empty">Sem outros clientes.</div>')+"</div>"}
+const S=(a,b,c)=>'<div class="stat"><small>'+a+'</small><span class="big" style="color:'+(c||"inherit")+'">'+b+"</span></div>";
+function vPedidos(){let t=0,p=0,d=0;Ped.forEach(o=>{t+=+o.total;o.estado==="pago"?p+=+o.total:d+=+o.total});
+ return'<div class="grid2">'+S("Pedidos",Ped.length)+S("Total pedido",kz(t))+S("Recebido",kz(p),"var(--ok)")+S("A receber",kz(d),d?"#D93A40":"")+'</div><div class="card"><h2>Pedidos</h2>'+(Ped.length?Ped.map(o=>{const s=st(o);
+ return'<div class="row"><div><b>'+kz(o.valor)+" · "+esc(o.perfis&&o.perfis.nome)+"</b><br><small>"+dt(o.criado_em)+" · "+esc(o.canal)+" · "+(o.tipo==="pin"?"PIN":"Plano "+esc(o.plano)+" · nº "+esc(o.numero_destino))+" · paga "+kz(o.total)+'</small><br><span class="pill '+s[1]+'">'+s[0]+"</span></div><div class=\"acts\">"+
+ (o.comprovativo_path&&o.estado!=="pago"?'<button class="btn s o" onclick="ver('+o.id+')">Ver</button>':"")+(o.estado==="pendente"?'<button class="btn s o" onclick="ativar('+o.id+')">Concluído</button>':"")+(o.estado!=="pago"?'<button class="btn s g" onclick="confirmar('+o.id+')">Confirmar</button>':"")+"</div></div>"}).join(""):'<div class="empty">Ainda não há pedidos.</div>')+"</div>"}
+function vClientes(){return'<div class="card"><h2>Clientes ('+Cli.length+')</h2>'+(Cli.length?Cli.map(u=>{const b=Ped.find(o=>o.cliente_id===u.id&&o.estado!=="pago");
+ return'<div class="row"><div><b>'+esc(u.nome)+"</b><br><small>"+esc(u.telefone)+" · "+LV[lvl(u)]+" · "+u.pagos_a_tempo+" a tempo, "+u.atrasos+' atrasos</small></div><span class="pill '+(b?st(b)[1]:"p-ok")+'">'+(b?"Deve "+kz(b.total):"Sem dívida")+"</span></div>"}).join(""):'<div class="empty">Ainda não há clientes.</div>')+"</div>"}
+function vStock(){return'<div class="card"><h2>Stock de PINs</h2>'+VAL.map(v=>{const n=Stk.filter(s=>s.valor===v&&!s.usado).length;return'<div class="row"><b>'+v+' Kz</b><span class="pill '+(n?"p-ok":"p-b")+'">'+n+" disponíveis</span></div>"}).join("")+
+ '<label class="t">Adicionar PINs</label><select id="sv">'+VAL.map(v=>"<option value="+v+">"+v+" Kz</option>").join("")+'</select><textarea id="sp" rows="4" style="margin-top:8px" placeholder="Um PIN por linha"></textarea><button class="btn" onclick="addStock()">Guardar no stock</button></div>'+
+ '<div class="card"><h2>Dados de pagamento</h2><label class="t">Titular</label><input id="pt" value="'+esc(PAY.titular)+'"><label class="t">IBAN</label><input id="pi" value="'+esc(PAY.iban)+'"><label class="t">Número Multicaixa Express</label><input id="pe" inputmode="tel" value="'+esc(PAY.express)+'"><button class="btn" onclick="savePay()">Guardar dados</button></div>'}
+function render(){const a=$("#app"),n=$("#nav");
+ if(!P){a.innerHTML='<div class="hero" style="margin-top:20px"><small>Recarga Fácil</small><h1>Administração</h1></div><div class="card"><label class="t" style="margin-top:0">Telemóvel</label><input id="ph" type="tel" inputmode="tel" autocomplete="username"><label class="t">Senha</label><input id="pw" type="password" autocomplete="current-password"><button class="btn" onclick="entrar()">Entrar</button></div>';n.innerHTML="";return}
+ const tabs=[["pedidos","Pedidos"],["clientes","Clientes"+(Cli.some(u=>u.estado==="pendente"&&u.papel==="cliente")?" •":"")],["stock","Stock e pagamento"]];
+ a.innerHTML='<div class="top"><h1>Administração</h1><button class="link" onclick="sair()">Sair</button></div>'+(tab==="pedidos"?vPedidos():tab==="clientes"?vCli2():vStock());
+ n.innerHTML="<nav>"+tabs.map(t=>'<button class="'+(tab===t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")+"</nav>"}
+boot();
+</script></body></html>
