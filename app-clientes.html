@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#2F4BFF"><title>Recarga Fácil</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2FB;--card:#fff;--ink:#0E1B3D;--mut:#5B6785;--pri:#2F4BFF;--on:#fff;--acc:#FFC21A;--ok:#0F9D58;--line:#DCE3F3}
+@media(prefers-color-scheme:dark){:root{--bg:#0A1226;--card:#121C3A;--ink:#EAF0FF;--mut:#93A0C4;--pri:#7B91FF;--on:#0A1226;--line:#22305A}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "DM Sans",system-ui,sans-serif}
+h1,h2,h3,.big{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif;margin:0;letter-spacing:-.02em}
+main{max-width:520px;margin:0 auto;padding:16px 16px 110px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:14px}
+.hero{background:linear-gradient(135deg,#0E1B3D,#2F4BFF);color:#fff;border:0;border-radius:26px;padding:20px}
+.hero h1{font-size:28px;margin:2px 0 12px}.bar{height:8px;border-radius:8px;background:rgba(255,255,255,.25);overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+.lvl{background:var(--acc);color:#0E1B3D;font-weight:700;border-radius:99px;padding:2px 12px;font-size:14px}
+label.t{font-weight:700;display:block;margin:16px 0 8px}
+.vouchers{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.v{border:2px dashed var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:14px 4px;text-align:center;cursor:pointer;font:inherit}.v .big{font-size:28px;font-weight:800;display:block}.v small{color:var(--mut)}
+.v.on{border:2px solid var(--pri);background:var(--acc);color:#0E1B3D}.v.on small{color:#0E1B3D}.v:disabled{opacity:.4}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:9px 14px;font:inherit;cursor:pointer}.chip.on{background:var(--pri);color:var(--on);border-color:var(--pri)}.chip:disabled{opacity:.45}
+input{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:13px}
+.btn{width:100%;border:0;border-radius:16px;background:var(--pri);color:var(--on);font:700 17px "DM Sans",sans-serif;padding:16px;margin-top:16px;cursor:pointer}.btn:disabled{background:var(--line);color:var(--mut)}
+.btn.s{width:auto;padding:9px 14px;font-size:14px;margin:0;border-radius:12px}.btn.o{background:none;color:var(--pri);border:1.5px solid var(--line)}
+.total{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding:14px;border-radius:14px;background:var(--bg)}.total b{font-size:22px}
+.lock{background:#FDECEC;color:#8A1C21;border:1px solid #F5B5B8;border-radius:16px;padding:14px;margin-top:14px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}small{color:var(--mut)}
+.pill{font-size:13px;font-weight:700;border-radius:99px;padding:3px 10px;white-space:nowrap}.p-ok{background:#DDF4E6;color:#0B6B3A}.p-w{background:#FFF1C7;color:#7A5600}.p-b{background:#FDDADC;color:#8A1C21}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}.stat .big{font-size:24px;display:block}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom));display:flex;gap:6px;justify-content:center}nav button{flex:1;max-width:130px;border:0;background:none;color:var(--mut);font:700 14px "DM Sans",sans-serif;padding:12px 4px;border-radius:14px;cursor:pointer}nav button.on{background:var(--pri);color:var(--on)}
+.top{display:flex;justify-content:space-between;align-items:center}.link{background:none;border:0;color:var(--pri);font:700 14px "DM Sans",sans-serif;cursor:pointer;padding:8px 0}
+.modal{position:fixed;inset:0;background:rgba(5,10,30,.6);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9}.modal .card{max-width:380px;width:100%;text-align:center}.pin{font:800 26px "Bricolage Grotesque",monospace;letter-spacing:.06em;background:var(--acc);color:#0E1B3D;border-radius:14px;padding:14px;margin:12px 0}
+.empty{text-align:center;color:var(--mut);padding:22px 8px}.mbox{border:1.5px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}.mbox b.big{display:block;font-size:19px;word-break:break-all;margin:4px 0 10px}
+</style></head>
+<body><main id="app"></main><div id="nav"></div><div id="modal"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+<script>
+const SB_URL="https://endbndbfmbaibxzrtiyk.supabase.co",SB_KEY="sb_publishable_8v9gmj1yn6uxM1FvJjkBhw_9U-mNLGX";
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s),LV=["Novo","Bronze","Prata","Ouro"],LIM=[200,500,1000,2000],THR=[0,3,6,12],VAL=[200,500,1000];
+let P=null,O=[],PAY={},tab="pedir",mode="in",busy=false,D={val:null,term:7,kind:"pin",plano:"",num:"",pm:"IBAN"};
+const kz=n=>Math.round(n).toLocaleString("pt-PT")+" Kz",dt=t=>new Date(t).toLocaleString("pt-PT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),dd=t=>new Date(t).toLocaleDateString("pt-PT",{day:"2-digit",month:"2-digit"});
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lvl=u=>{const b=u.pagos_a_tempo>=12?3:u.pagos_a_tempo>=6?2:u.pagos_a_tempo>=3?1:0;return u.atrasos>=2?0:Math.max(0,b-u.atrasos)};
+const debt=()=>O.find(o=>o.estado!=="pago"),rate=t=>(t>=30?12:10)-(lvl(P)===3?2:0);
+const st=o=>o.estado==="pago"?["Pago","p-ok"]:Date.now()>new Date(o.vence_em)?["Atrasado","p-b"]:o.estado==="pendente"?["A ativar","p-w"]:["Em dívida até "+dd(o.vence_em),"p-w"];
+function toast(h){$("#modal").innerHTML='<div class="modal" onclick="this.parentNode.innerHTML=\'\'"><div class="card">'+h+'<button class="btn">Fechar</button></div></div>'}
+const go=t=>{tab=t;render()},setD=(k,v)=>{D[k]=v;render()},setMode=m=>{mode=m;render()};
+async function load(){const{data:{user}}=await sb.auth.getUser();if(!user)return false;
+ P=(await sb.from("perfis").select("*").eq("id",user.id).maybeSingle()).data;if(!P)return false;
+ O=(await sb.from("pedidos").select("*").order("criado_em",{ascending:false})).data||[];
+ PAY=(await sb.from("config_pagamento").select("*").maybeSingle()).data||{};return true}
+async function boot(){const{data:{session}}=await sb.auth.getSession();if(!(session&&await load())){P=null;if(session)await sb.auth.signOut()}render()}
+async function entrar(novo){const ph=$("#ph").value.replace(/\D/g,""),pw=$("#pw").value;
+ if(ph.length!==9||pw.length<6)return toast("<h3>Dados incompletos</h3><p>Telemóvel com 9 dígitos e senha com pelo menos 6 caracteres.</p>");
+ const email=ph+"@recargafacil.app";
+ if(novo){const nm=$("#nm").value.trim(),cd=$("#cd").value;
+  if(nm.length<2||!/^\d{4}$/.test(cd))return toast("<h3>Dados incompletos</h3><p>Escreve o nome e um código pessoal de 4 dígitos (serve para pedires por SMS).</p>");
+  const{data,error}=await sb.auth.signUp({email,password:pw});
+  if(error)return toast("<h3>Não foi possível</h3><p>"+(/registered/i.test(error.message)?"Este número já está registado. Entra com a tua senha.":esc(error.message))+"</p>");
+  if(!data.session)return toast("<h3>Falta configuração</h3><p>A confirmação de email ainda está ativa no Supabase. Desliga-a e tenta de novo.</p>");
+  const e2=(await sb.from("perfis").insert({id:data.user.id,nome:nm,telefone:ph})).error;if(e2)return toast("<p>"+esc(e2.message)+"</p>");
+  await sb.rpc("definir_codigo_sms",{p_codigo:cd})
+ }else{const{error}=await sb.auth.signInWithPassword({email,password:pw});if(error)return toast("<h3>Entrada recusada</h3><p>Telemóvel ou senha incorretos.</p>")}
+ if(await load())render();else toast("<p>Conta sem perfil. Contacta o suporte.</p>")}
+async function sair(){await sb.auth.signOut();P=null;O=[];render()}
+async function pedir(){if(busy||debt()||!D.val)return;
+ if(D.kind==="plano"&&D.plano.trim().length<2)return toast("<h3>Falta o plano</h3><p>Escreve o nome do plano.</p>");
+ if(D.kind==="plano"&&D.num&&D.num.replace(/\D/g,"").length!==9)return toast("<h3>Número inválido</h3><p>Deve ter 9 dígitos.</p>");
+ busy=true;const num=D.kind==="plano"&&D.num?D.num.replace(/\D/g,""):P.telefone;
+ const{data,error}=await sb.rpc("criar_pedido",{p_valor:D.val,p_prazo:D.term,p_canal:"Plataforma",p_tipo:D.kind,p_plano:D.kind==="plano"?D.plano.trim():null,p_numero:num});busy=false;
+ if(error)return toast("<h3>Não foi possível</h3><p>"+esc(error.message)+"</p>");
+ let pin=null;if(data.estado==="entregue"){const r=await sb.from("stock_pins").select("pin").eq("pedido_id",data.id).maybeSingle();pin=r.data&&r.data.pin}
+ D.val=null;D.plano="";D.num="";await load();render();
+ toast((pin?'<h3>Pedido feito!</h3><p>Carrega este PIN no teu número:</p><div class="pin">'+esc(pin)+"</div>":"<h3>Pedido registado</h3><p>Vais receber o PIN ou a ativação assim que estiver pronto.</p>")+"<p>Pagas <b>"+kz(data.total)+"</b> até "+dd(data.vence_em)+". Vai a Pagar para enviar o comprovativo.</p>")}
+function colar(){const f=()=>toast("<h3>Não consegui colar</h3><p>Toca no campo e cola o número manualmente.</p>");try{navigator.clipboard.readText().then(t=>{D.num=t.replace(/\D/g,"").slice(-9);render()},f)}catch(e){f()}}
+function copy(t){const f=()=>toast("<p>Copia manualmente:</p><div class='pin' style='font-size:18px'>"+esc(t)+"</div>");try{navigator.clipboard.writeText(t).then(()=>toast("<h3>Copiado</h3><p>"+esc(t)+"</p>"),f)}catch(e){f()}}
+function comp(i){const f=i.files[0],b=debt();if(!f||!b)return;const im=new Image();
+ im.onload=()=>{const s=Math.min(1,1000/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  c.toBlob(async bl=>{const path=P.id+"/"+b.id+"-"+Date.now()+".jpg",u=await sb.storage.from("comprovativos").upload(path,bl,{contentType:"image/jpeg"});
+   if(u.error)return toast("<h3>Erro ao enviar</h3><p>"+esc(u.error.message)+"</p>");
+   const r=await sb.rpc("enviar_comprovativo",{p_id:b.id,p_path:path,p_metodo:D.pm});if(r.error)return toast("<p>"+esc(r.error.message)+"</p>");
+   await load();render();toast("<h3>Comprovativo enviado</h3><p>Aguarda a confirmação do administrador.</p>")},"image/jpeg",.7)};
+ im.onerror=()=>toast("<h3>Ficheiro inválido</h3><p>Escolhe uma foto ou captura de ecrã.</p>");im.src=URL.createObjectURL(f)}
+
+function viewLogin(){const n=mode==="up";return'<div class="hero" style="margin-top:20px"><small>Recarga Fácil</small><h1>Saldo hoje, pagas depois.</h1><small>Pede saldo de 200, 500 ou 1000 Kz em segundos.</small></div><div class="card"><div class="chips"><button class="chip '+(n?"":"on")+'" onclick="setMode(\'in\')">Entrar</button><button class="chip '+(n?"on":"")+'" onclick="setMode(\'up\')">Criar conta</button></div>'+
+ (n?'<label class="t">O teu nome</label><input id="nm" autocomplete="name" placeholder="Ex.: Maria Costa">':"")+'<label class="t">Telemóvel</label><input id="ph" type="tel" inputmode="tel" autocomplete="tel" placeholder="9XX XXX XXX"><label class="t">Senha</label><input id="pw" type="password" autocomplete="'+(n?"new-password":"current-password")+'" placeholder="Mínimo 6 caracteres">'+
+ (n?'<label class="t">Código pessoal (4 dígitos)</label><input id="cd" type="password" inputmode="numeric" maxlength="4" placeholder="Para pedidos por SMS">':"")+'<button class="btn" onclick="entrar('+n+')">'+(n?"Criar conta":"Entrar")+"</button></div>"}
+function viewPedir(){const l=lvl(P),b=debt(),lim=LIM[l],nx=l<3?THR[l+1]-P.pagos_a_tempo:0,pr=l<3?Math.max(0,Math.min(100,(P.pagos_a_tempo-THR[l])/(THR[l+1]-THR[l])*100)):100,off=!!b,r=D.val?rate(D.term):0;
+ let h='<div class="hero"><div class="top"><small>Olá,</small><span class="lvl">Nível '+LV[l]+'</span></div><h1>'+esc(P.nome)+'</h1><div class="top"><small>Limite por pedido</small><b>'+kz(lim)+'</b></div><div class="bar" style="margin:8px 0"><i style="width:'+pr+'%"></i></div><small>'+(l<3?"Faltam "+nx+" créditos pagos a tempo para o nível "+LV[l+1]:"Nível máximo. Tens a melhor taxa.")+"</small></div>";
+ if(b)h+='<div class="lock"><b>Pedidos bloqueados</b><br>Tens uma dívida de <b>'+kz(b.total)+"</b> ("+st(b)[0].toLowerCase()+").</div>"+(b.comprovativo_path?'<div class="card"><b>Comprovativo enviado.</b> Aguarda a confirmação do administrador.</div>':'<button class="btn" onclick="go(\'pagar\')">Pagar agora</button>');
+ h+='<div class="card" style="'+(off?"opacity:.55":"")+'"><h2>Pedir saldo</h2><label class="t">Quanto precisas?</label><div class="vouchers">'+VAL.map(v=>'<button class="v '+(D.val===v?"on":"")+'" '+(off||v>lim?"disabled":"")+' onclick="setD(\'val\','+v+')"><span class="big">'+v+"</span><small>Kz</small></button>").join("")+"</div>"+
+ '<label class="t">Receber como</label><div class="chips"><button class="chip '+(D.kind==="pin"?"on":"")+'" '+(off?"disabled":"")+' onclick="setD(\'kind\',\'pin\')">PIN de recarga</button><button class="chip '+(D.kind==="plano"?"on":"")+'" '+(off?"disabled":"")+' onclick="setD(\'kind\',\'plano\')">Plano específico</button></div>';
+ if(D.kind==="plano")h+='<input style="margin-top:10px" placeholder="Nome do plano (ex.: pacote mensal)" value="'+esc(D.plano)+'" oninput="D.plano=this.value" '+(off?"disabled":"")+'><div style="display:flex;gap:8px;margin-top:10px"><input inputmode="tel" placeholder="Número a carregar (9 dígitos)" value="'+esc(D.num)+'" oninput="D.num=this.value" '+(off?"disabled":"")+'><button class="btn s o" onclick="colar()">Colar</button></div><small>Se deixares vazio, usamos o teu número.</small>';
+ h+='<label class="t">Prazo para pagar</label><div class="chips">'+[7,15,30].map(t=>{const no=t===30&&l<2;return'<button class="chip '+(D.term===t?"on":"")+'" '+(off||no?"disabled":"")+' onclick="setD(\'term\','+t+')">'+(t===30?"Mensal":t+" dias")+(no?" (Prata+)":"")+"</button>"}).join("")+"</div>"+
+ (D.val?'<div class="total"><span>Pagas até '+dd(Date.now()+D.term*864e5)+" (+"+r+'%)</span><b>'+kz(D.val*(1+r/100))+"</b></div>":"")+'<button class="btn" '+(off||!D.val?"disabled":"")+' onclick="pedir()">'+(off?"Pedido bloqueado":"Confirmar pedido")+"</button></div>";return h}
+function viewPagar(){const b=debt();if(!b)return'<div class="card"><h2>Pagar</h2><div class="empty">Não tens nada para pagar.</div></div>';const ib=D.pm==="IBAN";
+ return'<div class="card"><h2>Pagar '+kz(b.total)+'</h2><small>Até '+dd(b.vence_em)+'. Escolhe como pagar:</small><div class="chips" style="margin-top:10px"><button class="chip '+(ib?"on":"")+'" onclick="setD(\'pm\',\'IBAN\')">Transferência IBAN</button><button class="chip '+(ib?"":"on")+'" onclick="setD(\'pm\',\'Express\')">Multicaixa Express</button></div><div class="mbox"><small>Titular</small><br><b>'+esc(PAY.titular)+"</b><br><small>"+(ib?"IBAN":"Número Express")+'</small><b class="big">'+esc(ib?PAY.iban:PAY.express)+'</b><button class="btn s" onclick="copy(\''+esc(ib?PAY.iban:PAY.express)+'\')">Copiar</button></div></div>'+
+ '<div class="card"><h2>Enviar comprovativo</h2><small>Tira uma foto ou escolhe a captura do pagamento.</small>'+(b.comprovativo_path?"<p><b>Comprovativo enviado ("+esc(b.metodo_pagamento)+").</b> Aguarda a confirmação do administrador.</p>":"")+'<input type="file" accept="image/*" style="margin-top:12px" onchange="comp(this)"></div>'}
+function hist(){return O.length?O.map(o=>{const s=st(o);return'<div class="row"><div><b>'+kz(o.valor)+"</b><small><br>"+dt(o.criado_em)+"<br>"+esc(o.canal)+" · "+(o.tipo==="pin"?"PIN":"Plano "+esc(o.plano)+" · nº "+esc(o.numero_destino))+" · paga "+kz(o.total)+'</small></div><span class="pill '+s[1]+'">'+s[0]+"</span></div>"}).join(""):'<div class="empty">Ainda não há pedidos.</div>'}
+function viewRel(){let t=0,p=0,d=0;O.forEach(o=>{t+=+o.total;o.estado==="pago"?p+=+o.total:d+=+o.total});const S=(a,b,c)=>'<div class="stat"><small>'+a+'</small><span class="big" style="color:'+(c||"inherit")+'">'+b+"</span></div>";
+ return'<h2>O meu relatório</h2><div class="grid2">'+S("Pedidos",O.length)+S("Total pedido",kz(t))+S("Já pago",kz(p),"var(--ok)")+S("Em dívida",kz(d),d?"#D93A40":"")+'</div><div class="card"><div class="row"><span>Pagos a tempo</span><b>'+P.pagos_a_tempo+'</b></div><div class="row"><span>Pagos com atraso</span><b>'+P.atrasos+"</b></div></div>"}
+function render(){const a=$("#app"),n=$("#nav");if(!P){a.innerHTML=viewLogin();n.innerHTML="";return}
+ const tabs=[["pedir","Pedir"],["pagar","Pagar"],["hist","Histórico"],["rel","Relatório"]];
+ a.innerHTML='<div class="top"><span></span><button class="link" onclick="sair()">Sair</button></div>'+(tab==="pedir"?viewPedir():tab==="pagar"?viewPagar():tab==="hist"?'<div class="card"><h2>Os meus pedidos</h2>'+hist()+"</div>":viewRel());
+ n.innerHTML="<nav>"+tabs.map(t=>'<button class="'+(tab===t[0]?"on":"")+'" onclick="go(\''+t[0]+'\')">'+t[1]+"</button>").join("")+"</nav>"}
+boot();
+</script></body></html>
